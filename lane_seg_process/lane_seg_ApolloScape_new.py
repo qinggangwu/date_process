@@ -74,7 +74,7 @@ def getLabe():
                 Label(   'b_n_sr' , 205 ,    0 ,  'reduction' ,   8 ,      False ,      False , (255, 128,   0) ),
                 Label(    's_w_p' , 210 ,    0 ,    'parking' ,   5 ,      False ,      False , (128,  64, 128) ),  # 停车线
                 Label(   'c_wy_z' , 214 ,    0 ,      'zebra' ,   6 ,      False ,      False , (190, 153, 153) ),   # 斑马线
-                Label(   'f_wy_z' , 214 ,    8 ,      'fence' ,   6 ,      False ,      False , (100, 50, 0) ),   # 栏栅
+                Label(   'f_wy_z' , 214 ,    8 ,      'fence' ,   6 ,      False ,      False , (0, 50, 100) ),   # 栏栅
 
 
 
@@ -163,8 +163,10 @@ class ApolloScape_data_process():
         '/home/wqg/data/apolloscap/ColorImage_road02/ColorImage/Record001'
 
         root = self.root
-        imgfilename = 'choice_Y/imgs'
-        pngfilename = 'choice_Y/gt_imgs'
+        # imgfilename = 'choice_Y/imgs'
+        # pngfilename = 'choice_Y/gt_imgs'
+        imgfilename = 'choice/imgs'
+        pngfilename = 'choice/add_gt_imgs'
 
 
         # file_list = [str(i) for i in range(32)]
@@ -184,27 +186,6 @@ class ApolloScape_data_process():
                     self.imgList.append(imgpath)
                     self.labelList.append(labepath)
 
-        # froadList = ['ColorImage_road03', 'ColorImage_road04']
-        # # froadList  = ['road03','road03']
-        # CameraList = ['Camera 5', 'Camera 6']
-        # for ind in range(len(froadList)):
-        #     fr = froadList[ind]
-        #     for f in os.listdir(os.path.join(root,fr,'ColorImage')):
-        #         for ff in CameraList:
-        #             for filename in os.listdir(os.path.join(root,fr,'ColorImage',f,ff)):
-        #                 if filename[-3:] != 'jpg':
-        #                     continue
-        #
-        #
-        #                 imgpath = os.path.join(root,fr,'ColorImage',f,ff,filename)
-        #
-        #                 labelname = filename[:-4] + '_bin.png'
-        #                 fr_label = fr.replace('ColorImage','Labels')
-        #                 labepath = os.path.join(root,fr_label,'Label',f,ff,labelname)
-        #
-        #                 if os.path.isfile(imgpath) and os.path.isfile(labepath):
-        #                     self.imgList.append(imgpath)
-        #                     self.labelList.append(labepath)
 
     def make_mask(self):
 
@@ -226,11 +207,7 @@ class ApolloScape_data_process():
             # newImge = np.ones(shape) *255
             newImge = np.zeros(shape)
 
-
             for cl in color2label:
-                # ccN = np.array(cl)
-                # ccN = cl[0]* 0.1 + cl[1]* 0.4 + cl[2]* 0.5
-
                 r = copy( labelimg[:, :, 0])
                 g = copy( labelimg[:, :, 1])
                 b = copy( labelimg[:, :, 2])
@@ -255,21 +232,12 @@ class ApolloScape_data_process():
 
                 # print('X size  : ',X.size)
                 # print('categoryId',color2label[cl].categoryId * 20)
-                newImge[(X ,Y)] = color2label[cl].trainId
+                newImge[(X ,Y)] = color2label[cl].trainId    # * 20
 
-                # point = labelimg(np.where(labelimg == cc))
 
-                # print(np.max(point[1]))
-                # print(point)
 
-            # cv2.namedWindow("labelimg", cv2.WINDOW_NORMAL)
-            # cv2.namedWindow("img", cv2.WINDOW_NORMAL)
-            # cv2.imshow('img', newImge)
-            # cv2.imshow('labelimg', labelimg)
-            # cv2.imshow('img', img)
-            # cv2.waitKey(0)
-            cv2.imwrite("/home/wqg/data/apolloscape/test/gt_imgs/%06d.png"%i,newImge)
-            cv2.imwrite("/home/wqg/data/apolloscape/test/imgs/%06d.jpg"%i,img)
+            cv2.imwrite(self.root + "test/gt_imgs/%06d.png"%i,newImge)
+            cv2.imwrite(self.root + "test/imgs/%06d.jpg"%i,img)
 
     def make_train_txt(self):
 
@@ -298,9 +266,11 @@ class ApolloScape_data_process():
 
     def choice_pic(self):
 
-        chioce_labels = get_chioce_Labe()
+        labels = getLabe()
+        # chioce_labels = get_chioce_Labe()
 
-        color2label = {label.color: label for label in chioce_labels}
+        color2label = {label.color: label for label in labels}
+        # color2label = {label.color: label for label in chioce_labels}
 
         os.makedirs(self.root +'/choice_all/gt_imgs',exist_ok=True )
         os.makedirs(self.root +'/choice_all/imgs',exist_ok=True )
@@ -404,13 +374,6 @@ class ApolloScape_data_process():
         # print(er_imgname_list)
 
 
-
-
-
-
-
-
-
 def get_lane_seg_precent():
 
     dit1 = {0: 253576664, 1: 70916059, 2: 0, 3: 194646097, 4: 47781985, 6: 21626119, 7: 41951, 5: 81213074 ,'pic': 5800 }
@@ -464,12 +427,13 @@ if __name__ =="__main__":
     ColorImage_road02    33119 
     """
 
-    path = '/home/wqg/data/apolloscape/'
+    path = '/media/wqg/3e165c12-9862-4867-b333-fbf93befd928/home/wqg/data/apolloscape/'
     P = ApolloScape_data_process(path)
     # P.get_img_label_list()     # 获取所有文件路径
     P.get_chioce_list()     # 获取所有选择文件路径
 
-    P.moive_errer_img()  # 剔除所有错误图片
+    # P.moive_errer_img()  # 剔除所有错误图片
+    P.make_mask()      # 制作标签
 
 
     # n = random.randint(0,15000)
@@ -489,13 +453,13 @@ if __name__ =="__main__":
 
 
 
-    pp = '/home/wqg/data/apolloscape/Labels_road02/Label/Record042/Camera 5/170927_073442476_Camera_5_bin.png'
-    pp = '/home/wqg/data/apolloscape/Labels_road02/Label/Record002/Camera 5/170927_063949364_Camera_5_bin.png'
-
-    cv2.namedWindow("img", cv2.WINDOW_NORMAL)
-    img = cv2.imread(pp)
-    cv2.imshow('img', img)
-    cv2.waitKey(0)
+    # pp = '/home/wqg/data/apolloscape/Labels_road02/Label/Record042/Camera 5/170927_073442476_Camera_5_bin.png'
+    # pp = '/home/wqg/data/apolloscape/Labels_road02/Label/Record002/Camera 5/170927_063949364_Camera_5_bin.png'
+    #
+    # cv2.namedWindow("img", cv2.WINDOW_NORMAL)
+    # img = cv2.imread(pp)
+    # cv2.imshow('img', img)
+    # cv2.waitKey(0)
 
 """
 /home/wqg/data/apolloscape/Labels_road02/Label/Record002/Camera 5/170927_064010293_Camera_5_bin.png (0, 0, 230)

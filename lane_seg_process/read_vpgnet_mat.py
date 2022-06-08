@@ -29,11 +29,7 @@
 2	hard					预测消失点
 
 
-
-
 公交线路专用车道线的颜色为蓝色（韩国为蓝色，中国为黄色）
-
-
 """
 
 
@@ -83,10 +79,6 @@ def walkThroughDataset(dataSetDir):
     for (dirpath, dirnames, filenames) in os.walk(dataSetDir):
         listOfFiles += [os.path.join(dirpath, file) for file in filenames if os.path.splitext(file)[-1] == '.mat' ]
 
-
-    # print(listOfFiles[10])
-    # print(listOfFiles[100])
-    # print(listOfFiles[1000]);quit()
     """
     /home/wqg/data/VPGNet/scene_4/20160518_2015_20/000121.mat
     /home/wqg/data/VPGNet/scene_4/20160518_1953_48/000151.mat
@@ -156,7 +148,7 @@ def change_label(seg):
 def parse_args():
     parser = argparse.ArgumentParser(
         description='VPGNet Dataset Quick Inspector')
-    parser.add_argument('--rootDir', type=str, default=r'/home/wqg/data/VPGNet',
+    parser.add_argument('--rootDir', type=str, default=r'/media/wqg/3e165c12-9862-4867-b333-fbf93befd928/home/wqg/data/VPGNet',
                         help='root directory (default: D:\\VPGNet-DB-5ch)')
     args = parser.parse_args()
     return args
